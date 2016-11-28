@@ -1,0 +1,104 @@
+#include <iostream>
+#include <limits>
+#include <list>
+using namespace std;
+
+
+class hashTable{
+private:
+	int max = 1 << 10;
+	list<string> items[1 << 10];
+    int hCode;
+public:
+	hashTable();
+    hashTable(int);
+    int hash(string);
+	unsigned int hashcode1(string);
+    unsigned int hashcode2(string);
+	int insert(string);
+	int search(string);
+};
+
+
+hashTable::hashTable(){}
+
+hashTable::hashTable(int h){
+    hCode = h;
+}
+
+unsigned int hashTable::hashcode1(string s){
+    unsigned int h = 0;
+    for (int i = 0; i < s.length(); i++){
+        h = 31 * h + s[i];
+    }
+    return h;
+}
+unsigned int hashTable::hashcode2(string s){
+    unsigned int h = 0, high, i = 0;
+    while(s[i] != '\0'){
+        h = (h << 4) + s[i++];
+        if (high = (h & 0xF0000000)){
+            h ^= high >> 24;
+        }
+        h&=~high;
+    }
+    return h;
+}
+
+int hashTable::hash(string s) { 
+    unsigned int x;
+    if (hCode == 1){
+        x = hashcode1(s);
+    } else {
+        x = hashcode2(s);
+    }
+    int z = 60147, d = 10, w = 31;
+	int theMod = 1 << w;
+	return ((z * x) % theMod) >> w - d;
+}
+ 
+
+int hashTable::insert(string s){
+    int index = hash(s);
+    int col = items[index].size() + 1;
+    items[index].push_back(s);
+    return col;    
+}
+
+int hashTable::search(string s){
+    int index = hash(s);
+    int col = 0;
+    if (items[index].empty()){
+        return 1;
+    } else {
+        for (list<string>::iterator it = items[index].begin(); it != items[index].end(); it++){
+            col++;
+            if (*it == s){
+                return col;
+            }
+        }
+        return col + 1;
+    }
+}
+	
+
+
+using namespace std;
+int main() {
+    int testcases, m;
+    cin >> testcases;
+    for (int i = 0; i < testcases; i++){
+        cin >> m;
+        hashTable h(1),g(2);
+        string s;
+        for (int j = 0; j < m; j++){
+            cin >> s;
+            cout << h.insert(s) << " ";
+            g.insert(s);
+        }
+        string search1;
+        cin >> search1;
+        cout << h.search(search1) << " " << g.search(search1) << endl;
+    }
+    return 0;
+}
