@@ -1,0 +1,87 @@
+
+#include <iostream>
+#include <limits>
+using namespace std;
+
+
+class hashTable{
+private:
+	int max;
+	int size;
+	int *items;
+	int inf;
+public:
+	hashTable();
+	int hash(int);
+	int insert(int);
+	int search(int);
+};
+
+hashTable::hashTable(){
+	inf = std::numeric_limits<int>::max();
+	max = 512;
+	size = 0;
+	items = new int[max];
+	for (int i = 0; i < max; i++){
+		items[i] = inf;
+	}
+}
+
+int hashTable::hash(int x) { 
+    int z = 60147, d = 9, w = 16;
+	int theMod = 1 << w;
+	return ((z * x) % theMod) >> w - d;
+}
+
+int hashTable::insert(int x){
+	if (size < max){
+		int col = 0;
+		int i = hash(x);
+        while(items[i] != inf){
+			i = (i + 1) % max;
+			col++;
+		}
+		items[i] = x;
+		size++;
+		return col;
+	} else {
+		return -1;
+	}
+}
+
+int hashTable::search(int x){
+	if (size > 0){
+		int col = 0;
+        int i = hash(x);
+        while (true){
+            if (items[i] == x){
+                return col;
+            }
+            if (items[i] == inf){
+                return 0;
+            }
+            i = (i + 1) % max;
+            col++;
+        }
+    } else {
+		return -1;
+	}
+}
+
+int main(){
+	int testcases, n, num, search;
+	cin >> testcases;
+	while (testcases > 0){
+		hashTable h;
+		cin >> n;
+		for (int i = 0; i < n; i++){
+			cin >> num;
+			int res = h.insert(num); 
+			cout << res << " ";
+		}
+		cin >> search;
+        cout << endl << h.search(search) << endl;
+		testcases--;
+	}
+	
+}
